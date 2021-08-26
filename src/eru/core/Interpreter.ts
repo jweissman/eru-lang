@@ -1,32 +1,57 @@
-import { grammar, semantics } from "../lang/Eru";
+import { BinaryExpression, Expression, grammar, IntegerLiteral, semantics } from "../lang/Eru";
+import { Arda, EruNull, EruObject, Instruction } from "../vm/Arda";
 
-class EruObject {
-  get inspect() { return '(EruObject)'; }
-}
+type Code = Array<Instruction>
 
-class EruNull extends EruObject {
-  get inspect() { return '(null)'; }
-}
-
-class EruInt extends EruObject {
-  constructor(private value: number) {
-    super();
-  }
-  get inspect() { return String(this.value); }
-}
-
-class EruInterpreter {
+class Interpreter {
+  private vm: Arda = new Arda()
   interpret(input: string): string {
     return this.evaluate(input).inspect
   }
 
   evaluate(input: string): EruObject {
     const match = grammar.match(input)
-    const value = semantics(match).eval()
-    return new EruInt(value)
+    const ast = semantics(match).tree()
+    const program = this.codegen(ast)
+    const result = this.execute(program)
+    return result
+  }
+
+  execute(program: Code): EruObject {
+    // console.log('EruIntepreter.execute', { program })
+    let _ = new EruNull();
+    program.forEach(instruction => _ = this.vm.executeOne(instruction))
+    return _;
+  }
+
+
+  commandsForBinaryOps: { [op: string]: string } = {
+    '+': 'iplus',
+    '-': 'isub',
+    '*': 'imul',
+    '/': 'idiv'
+  }
+  private codegen(ast: Expression): Code {
+    if (ast instanceof BinaryExpression) {
+      const command = this.commandsForBinaryOps[ast.op]
+      if (command) {
+        const operatorCode: Instruction = [command] //, []]
+        return [
+          ...this.codegen(ast.left),
+          ...this.codegen(ast.right),
+          operatorCode,
+        ]
+      } else {
+        throw new Error("EruInterpreter.codegen: binary operator not supported " + ast.op)
+      }
+    } else if (ast instanceof IntegerLiteral) {
+      return [[ 'ipush', [String(ast.value)] ]]
+    } else {
+      throw new Error("EruInterpreter.codegen: not implemented for " + ast.constructor.name)
+    }
   }
 }
 
-const interpreter = new EruInterpreter()
+const interpreter = new Interpreter()
 const interpret = (input: string) => interpreter.interpret(input)
 export default interpret;

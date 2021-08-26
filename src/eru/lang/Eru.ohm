@@ -3,8 +3,13 @@ Arithmetic {
     = AddExp
 
   AddExp
-    = AddExp "+" PriExp  -- plus
-    | AddExp "-" PriExp  -- minus
+    = AddExp "+" MulExp  -- plus
+    | AddExp "-" MulExp  -- minus
+    | MulExp
+
+  MulExp
+    = MulExp "*" PriExp  -- mult
+    | MulExp "/" PriExp  -- div
     | PriExp
 
   PriExp
