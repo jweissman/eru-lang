@@ -1,15 +1,17 @@
 import { BinaryExpression, Expression, grammar, IntegerLiteral, semantics } from "../lang/Eru";
-import { Arda, EruNull, EruObject, Instruction } from "../vm/Arda";
+import { Arda, EruNull, EruObject, Instruction, VM } from "../vm/Arda";
 
 type Code = Array<Instruction>
 
-class Interpreter {
-  private vm: Arda = new Arda()
+export class Interpreter {
+  private vm: VM = new Arda()
   interpret(input: string): string {
     return this.evaluate(input).inspect
   }
 
   evaluate(input: string): EruObject {
+    console.log("Interpreter.evaluate: " + input)
+    
     const match = grammar.match(input)
     const ast = semantics(match).tree()
     const program = this.codegen(ast)
@@ -24,8 +26,7 @@ class Interpreter {
     return _;
   }
 
-
-  commandsForBinaryOps: { [op: string]: string } = {
+  protected commandsForBinaryOps: { [op: string]: string } = {
     '+': 'iplus',
     '-': 'isub',
     '*': 'imul',
@@ -51,7 +52,3 @@ class Interpreter {
     }
   }
 }
-
-const interpreter = new Interpreter()
-const interpret = (input: string) => interpreter.interpret(input)
-export default interpret;

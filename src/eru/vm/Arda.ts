@@ -8,8 +8,14 @@ export class EruInt extends EruObject {
 }
 
 export interface VM {
+  executeOne(instruction: Instruction): EruObject;
+
   iplus: () => void;
   isub: () => void;
+  imul: () => void;
+  idiv: () => void;
+
+  // sadd: () => void;
 }
 
 // op, args
