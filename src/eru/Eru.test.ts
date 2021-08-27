@@ -32,5 +32,29 @@ describe("The Eru Programming Language", () => {
         expect(evaluate('"hello" + " " + "world"')).toEqual("'hello world'")
       })
     })
+
+    describe("Boolean Algebra", () => {
+      it('should define boolean values', () => {
+        expect(evaluate("true")).toEqual('true')
+        expect(evaluate("false")).toEqual('false')
+      })
+
+      it('should define boolean operations', () => {
+        expect(evaluate("true && true")).toEqual('true')
+        expect(evaluate("true && false")).toEqual('false')
+        expect(evaluate("false && true")).toEqual('false')
+        expect(evaluate("false && false")).toEqual('false')
+
+        expect(evaluate("true || true")).toEqual('true')
+        expect(evaluate("true || false")).toEqual('true')
+        expect(evaluate("false || true")).toEqual('true')
+        expect(evaluate("false || false")).toEqual('false')
+
+        // expect(evaluate("!true")).toEqual('false')
+        // expect(evaluate("!false")).toEqual('true')
+        // expect(evaluate("!!false")).toEqual('false')
+        // expect(evaluate("!!true")).toEqual('true')
+      })
+    })
   })
 });

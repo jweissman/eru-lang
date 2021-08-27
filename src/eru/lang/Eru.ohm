@@ -8,14 +8,26 @@ Arithmetic {
     | MulExp
 
   MulExp
-    = MulExp "*" PriExp  -- mult
-    | MulExp "/" PriExp  -- div
+    = MulExp "*" LogExp  -- mult
+    | MulExp "/" LogExp  -- div
+    | LogExp
+
+  LogExp
+    = LogExp "||" PriExp  -- or
+    | LogExp "&&" PriExp  -- and
+    | "!" LogExp -- not
     | PriExp
 
   PriExp
     = "(" Exp ")"  -- paren
+    | bool
     | number
 
   number
     = digit+
+    // | ident
+
+  bool
+    = "true" -- true
+    | "false" -- false
 }

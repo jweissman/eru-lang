@@ -1,4 +1,4 @@
-import { BinaryExpression, Expression, grammar, IntegerLiteral, semantics } from "../lang/Eru";
+import { BinaryExpression, BooleanLiteral, Expression, grammar, IntegerLiteral, semantics } from "../lang/Eru";
 import { Arda, EruNull, EruObject, Instruction, VM } from "../vm/Arda";
 
 type Code = Array<Instruction>
@@ -16,6 +16,7 @@ export class Interpreter {
     const ast = semantics(match).tree()
     const program = this.codegen(ast)
     const result = this.execute(program)
+
     return result
   }
 
@@ -30,7 +31,9 @@ export class Interpreter {
     '+': 'iplus',
     '-': 'isub',
     '*': 'imul',
-    '/': 'idiv'
+    '/': 'idiv',
+    '&&': 'band',
+    '||': 'bor'
   }
   private codegen(ast: Expression): Code {
     if (ast instanceof BinaryExpression) {
@@ -47,6 +50,8 @@ export class Interpreter {
       }
     } else if (ast instanceof IntegerLiteral) {
       return [[ 'ipush', [String(ast.value)] ]]
+    } else if (ast instanceof BooleanLiteral) {
+      return [[ 'bpush', [String(ast.value)] ]]
     } else {
       throw new Error("EruInterpreter.codegen: not implemented for " + ast.constructor.name)
     }
