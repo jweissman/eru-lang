@@ -1,4 +1,5 @@
-import { BinaryExpression, BooleanLiteral, Expression, grammar, IntegerLiteral, semantics } from "../lang/Eru";
+import { grammar, semantics } from "../lang/Eru";
+import { Expression, BinaryExpression, UnaryExpression, IntegerLiteral, BooleanLiteral } from "../lang/Telperion";
 import { Arda, EruNull, EruObject, Instruction, VM } from "../vm/Arda";
 
 type Code = Array<Instruction>
@@ -10,7 +11,7 @@ export class Interpreter {
   }
 
   evaluate(input: string): EruObject {
-    console.log("Interpreter.evaluate: " + input)
+    // console.log("Interpreter.evaluate: " + input)
     
     const match = grammar.match(input)
     const ast = semantics(match).tree()
@@ -27,6 +28,10 @@ export class Interpreter {
     return _;
   }
 
+  protected commandsForUnaryOps: { [op: string]: string } = {
+    '!': 'bnot',
+    '-': 'ineg',
+  }
   protected commandsForBinaryOps: { [op: string]: string } = {
     '+': 'iplus',
     '-': 'isub',
@@ -47,6 +52,17 @@ export class Interpreter {
         ]
       } else {
         throw new Error("EruInterpreter.codegen: binary operator not supported " + ast.op)
+      }
+    } else if (ast instanceof UnaryExpression) {
+      const command = this.commandsForUnaryOps[ast.op]
+      if (command) {
+        const operatorCode: Instruction = [command] //, []]
+        return [
+          ...this.codegen(ast.one),
+          operatorCode,
+        ]
+      } else {
+        throw new Error("EruInterpreter.codegen: unary operator not supported " + ast.op)
       }
     } else if (ast instanceof IntegerLiteral) {
       return [[ 'ipush', [String(ast.value)] ]]

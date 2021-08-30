@@ -17,6 +17,7 @@ export interface VM {
   isub: () => void;
   imul: () => void;
   idiv: () => void;
+  ineg: () => void;
 
   // boolean algebra
   // bpush: () => void;
@@ -66,6 +67,12 @@ export class Arda implements VM {
     let result = left.value / right.value;
     this.frame.stack.push(new EruInt(result));
   }
+  
+  ineg() {
+    const top = this.frame.stack.pop() as any as EruInt;
+    let result = -top.value;
+    this.frame.stack.push(new EruInt(result));
+  }
 
   bor() {
     const [left, right] = this.popTwo<EruBool>();
@@ -100,8 +107,10 @@ export class Arda implements VM {
       case 'isub': this.isub(); break;
       case 'imul': this.imul(); break;
       case 'idiv': this.idiv(); break;
+      case 'ineg': this.ineg(); break;
       case 'band': this.band(); break;
       case 'bor': this.bor(); break;
+      case 'bnot': this.bnot(); break;
       case 'print': args && args.forEach(arg => console.log(arg)); returnTop = false; break;
       default: throw new Error("EruInterpreter: Method not implemented -- " + method);
     }

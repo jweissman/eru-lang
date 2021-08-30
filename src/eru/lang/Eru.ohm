@@ -20,6 +20,7 @@ Arithmetic {
 
   PriExp
     = "(" Exp ")"  -- paren
+    | "-" PriExp  -- neg
     | bool
     | number
 
@@ -31,3 +32,4 @@ Arithmetic {
     = "true" -- true
     | "false" -- false
 }
+

@@ -25,6 +25,11 @@ describe("The Eru Programming Language", () => {
         expect(evaluate('3+3*2')).toBe('9')
         expect(evaluate('(3+3)*2')).toBe('12')
       });
+
+      it('negative values', () => {
+        expect(evaluate('5+-3')).toBe('2')
+        expect(evaluate('-10 + 20')).toBe('10')
+      })
     })
 
     xdescribe("String Manipulation", () => {
@@ -39,21 +44,35 @@ describe("The Eru Programming Language", () => {
         expect(evaluate("false")).toEqual('false')
       })
 
-      it('should define boolean operations', () => {
-        expect(evaluate("true && true")).toEqual('true')
-        expect(evaluate("true && false")).toEqual('false')
-        expect(evaluate("false && true")).toEqual('false')
-        expect(evaluate("false && false")).toEqual('false')
+      describe('should define boolean operations', () => {
+        it('and', () => {
+          expect(evaluate("true && true")).toEqual('true')
+          expect(evaluate("true && false")).toEqual('false')
+          expect(evaluate("false && true")).toEqual('false')
+          expect(evaluate("false && false")).toEqual('false')
+        })
 
-        expect(evaluate("true || true")).toEqual('true')
-        expect(evaluate("true || false")).toEqual('true')
-        expect(evaluate("false || true")).toEqual('true')
-        expect(evaluate("false || false")).toEqual('false')
+        it('or', () => {
+          expect(evaluate("true || true")).toEqual('true')
+          expect(evaluate("true || false")).toEqual('true')
+          expect(evaluate("false || true")).toEqual('true')
+          expect(evaluate("false || false")).toEqual('false')
+        })
 
-        // expect(evaluate("!true")).toEqual('false')
-        // expect(evaluate("!false")).toEqual('true')
-        // expect(evaluate("!!false")).toEqual('false')
-        // expect(evaluate("!!true")).toEqual('true')
+        it('not', () => {
+          expect(evaluate("!true")).toEqual('false')
+          expect(evaluate("!false")).toEqual('true')
+          expect(evaluate("!!false")).toEqual('false')
+          expect(evaluate("!!true")).toEqual('true')
+          expect(evaluate("!!!true")).toEqual('false')
+          expect(evaluate("!!!false")).toEqual('true')
+        })
+        it('composes', () => {
+          expect(evaluate("!(false || true)")).toEqual('false')
+          expect(evaluate("!!(false || true)")).toEqual('true')
+          expect(evaluate("!(false && true)")).toEqual('true')
+          expect(evaluate("!!(false && true)")).toEqual('false')
+        })
       })
     })
   })
